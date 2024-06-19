@@ -42,3 +42,76 @@ def getCoreData(data):
 spacex_url="https://api.spacexdata.com/v4/launches/past"
 response = requests.get(spacex_url)
 print(response.content)
+static_json_url='https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/API_call_spacex_api.json'
+response.status_code
+# Use json_normalize meethod to convert the json result into a dataframe
+# Get the head of the dataframe
+# Lets take a subset of our dataframe keeping only the features we want and the flight number, and date_utc.
+data = data[['rocket', 'payloads', 'launchpad', 'cores', 'flight_number', 'date_utc']]
+
+# We will remove rows with multiple cores because those are falcon rockets with 2 extra rocket boosters and rows that have multiple payloads in a single rocket.
+data = data[data['cores'].map(len)==1]
+data = data[data['payloads'].map(len)==1]
+
+# Since payloads and cores are lists of size 1 we will also extract the single value in the list and replace the feature.
+data['cores'] = data['cores'].map(lambda x : x[0])
+data['payloads'] = data['payloads'].map(lambda x : x[0])
+
+# We also want to convert the date_utc to a datetime datatype and then extracting the date leaving the time
+data['date'] = pd.to_datetime(data['date_utc']).dt.date
+
+# Using the date we will restrict the dates of the launches
+data = data[data['date'] <= datetime.date(2020, 11, 13)]
+#Global variables 
+BoosterVersion = []
+PayloadMass = []
+Orbit = []
+LaunchSite = []
+Outcome = []
+Flights = []
+GridFins = []
+Reused = []
+Legs = []
+LandingPad = []
+Block = []
+ReusedCount = []
+Serial = []
+Longitude = []
+Latitude = []
+BoosterVersion
+# Call getBoosterVersion
+getBoosterVersion(data)
+BoosterVersion[0:5]
+# Call getLaunchSite
+getLaunchSite(data)
+# Call getPayloadData
+getPayloadData(data)
+# Call getCoreData
+getCoreData(data)
+launch_dict = {'FlightNumber': list(data['flight_number']),
+'Date': list(data['date']),
+'BoosterVersion':BoosterVersion,
+'PayloadMass':PayloadMass,
+'Orbit':Orbit,
+'LaunchSite':LaunchSite,
+'Outcome':Outcome,
+'Flights':Flights,
+'GridFins':GridFins,
+'Reused':Reused,
+'Legs':Legs,
+'LandingPad':LandingPad,
+'Block':Block,
+'ReusedCount':ReusedCount,
+'Serial':Serial,
+'Longitude': Longitude,
+'Latitude': Latitude}
+# Create a data from launch_dict
+# Show the head of the dataframe
+# Hint data['BoosterVersion']!='Falcon 1'
+data_falcon9.loc[:,'FlightNumber'] = list(range(1, data_falcon9.shape[0]+1))
+data_falcon9
+data_falcon9.isnull().sum()
+# Calculate the mean value of PayloadMass column
+
+# Replace the np.nan values with its mean value
+data_falcon9.to_csv('dataset_part_1.csv', index=False)
